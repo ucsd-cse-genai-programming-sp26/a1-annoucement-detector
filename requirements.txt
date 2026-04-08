@@ -1,0 +1,4 @@
+atproto
+openai
+python-dotenv
+pandas
