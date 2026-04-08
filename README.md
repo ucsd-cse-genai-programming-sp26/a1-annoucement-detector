@@ -11,6 +11,7 @@ This project is a social media monitor designed to identify community events and
    source venv/bin/activate  # macOS/Linux
    # or .\venv\Scripts\activate on Windows
    Install dependencies:
+   pip install -r requirements.txt
 3. How to Run
  ```bash
 python scripts/fetch.py
