@@ -10,3 +10,12 @@ This project is a social media monitor designed to identify community events and
    python -m venv venv
    source venv/bin/activate  # macOS/Linux
    # or .\venv\Scripts\activate on Windows
+   Install dependencies:
+3. How to Run
+ ```bash
+python scripts/fetch.py
+python scripts/label.py
+python scripts/eval.py
+4. Run Pipeline (Live/Batch)
+ ```bash
+python scripts/run_pipeline.py
