@@ -1,0 +1,31 @@
+I have the idea to detect event using reddit on r/sandiegosocial, how to use the reddit api to get data
+Perfect—this is a great, clean idea and r/sandiegosocial is an even better choice than general San Diego 👍
+Now let’s get you from 0 → working data download as simply as possible.
+
+🧰 Step 1: Install what you need
+
+In terminal:
+
+pip install praw python-dotenv
+🔑 Step 2: Get Reddit API credentials
+
+Go to:
+👉 https://www.reddit.com/prefs/apps
+
+Create an app:
+
+type: script
+name: anything (e.g. sd-event-monitor)
+
+You’ll get:
+
+client_id
+client_secret
+📁 Step 3: Create .env file
+
+In your project folder:
+
+REDDIT_CLIENT_ID=your_client_id
+REDDIT_CLIENT_SECRET=your_client_secret
+REDDIT_USER_AGENT=sd-event-monitor
+🧠 Step 4: Python script to download posts
