@@ -97,7 +97,7 @@ Measured on 50 manually labeled BlueSky posts.
 | llm_classify | 487 | 302 | 185     | DeepSeek Yes/No            |
 | llm_extract  | 302 | 302 | 0       | JSON extraction            |
 
-
+### Stats files
 Every `evaluate` run appends to two CSV files, allowing systematic comparison across prompt changes and pipeline configurations.
 
 **`data/eval_runs.csv`** — one row per run, summarized metrics:
@@ -128,44 +128,22 @@ run_id | timestamp | label | post_id | text | true_label | predicted | correct
 
 ---
 
-## Evaluation Tracking
-
-
-```python
-import pandas as pd
-
-runs    = pd.read_csv("data/eval_runs.csv")
-samples = pd.read_csv("data/eval_samples.csv")
-
-# Compare runs
-runs[["timestamp", "label", "precision", "recall", "f1", "cost_usd"]]
-
-# See errors for a specific run
-run_samples = samples[samples["run_id"] == "a3f9c12b"]
-run_samples[run_samples["correct"] == 0]
-```
-
-**`data/pipeline_runs.csv`** — one row per `run_pipeline` run, with per-stage post counts and estimated cost. Useful for tracking how the pipeline behaves on real (unlabeled) data over time.
-
----
-
 ## Project Structure
 
 ```
 a1-announcement-detector/
-├── .env                         # your credentials (never commit)
-├── .env.example                 # template showing required keys
+├── .env                         # credentials
 ├── requirements.txt
 ├── README.md
 ├── DESIGN.md
 ├── data/
 │   ├── raw_posts.jsonl          # 500 fetched BlueSky posts
 │   ├── gold.jsonl               # 50 manually labeled posts
-│   ├── detected_events.jsonl   # events found by run_pipeline
-│   ├── eval_runs.csv            # one row per evaluate run (summary)
-│   ├── eval_samples.csv         # one row per post per evaluate run
-│   └── pipeline_runs.csv        # one row per run_pipeline run
-├── transcripts/                 # AI assistant chat logs
+│   ├── detected_events.jsonl    # events found by run_pipeline
+│   ├── eval_runs.csv            # evaluate run (summary)
+│   ├── eval_samples.csv     
+│   └── pipeline_runs.csv      
+├── transcripts/                
 ├── monitor/
 │   ├── __init__.py
 │   ├── pipeline.py              # assembles stages into EventPipeline
