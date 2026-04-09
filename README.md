@@ -35,7 +35,7 @@ DEEPSEEK_API_KEY=your-deepseek-key-here
 ```
 
 - **BSKY_HANDLE / BSKY_APP_PASSWORD**: Your BlueSky username and an App Password. Generate one at BlueSky → Settings → Privacy and Security → App Passwords.
-- **DEEPSEEK_API_KEY**: Your DeepSeek API key from [platform.deepseek.com](https://platform.deepseek.com).
+- **DEEPSEEK_API_KEY**: DeepSeek API key.
 
 ---
 
