@@ -1,0 +1,2 @@
+total,passed,pass_rate,cost_usd,metadata_out,length_out,profanity_out,llm_classify_out,timestamp,events_found
+500,302,60.4,0.050389,496,487,487,302,2026-04-08 20:34:57,302

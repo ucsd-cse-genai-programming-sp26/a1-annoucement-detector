@@ -2,3 +2,4 @@ atproto
 openai
 python-dotenv
 pandas
+better-profanity
