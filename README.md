@@ -71,7 +71,7 @@ Each run appends to two CSV files in `data/`.
 ---
 
 ## Demo Video
-**[Demo Video — YouTube Link](YOUR_YOUTUBE_LINK_HERE)**
+**[Demo Video — YouTube Link](https://youtu.be/tTKSz8C1DHI)**
 
 ---
 
