@@ -1,0 +1,19 @@
+{
+  "last_timestamp": "unknown",
+  "seen_ids": [],
+  "stats": {
+    "total_processed": 31,
+    "events_found": 69,
+    "last_run": "2026-04-17T23:38:58.540923Z",
+    "start_time": "2026-04-17T23:23:12.798732Z",
+    "last_fetch_count": 0,
+    "last_fetch_time": null
+  },
+  "config": {
+    "max_age_days": 60,
+    "seen_ids_limit": 100000,
+    "save_interval_posts": 100,
+    "save_interval_seconds": 30,
+    "recent_ids_limit": 1000
+  }
+}

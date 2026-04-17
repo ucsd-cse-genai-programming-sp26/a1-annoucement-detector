@@ -19,7 +19,7 @@ class KeywordFilter(Stage):
     # Post must match AT LEAST ONE of these to be considered local
     LOCATION_KEYWORDS = [
         # city / region names
-        "san diego", "sd", "socal", "so cal", "southern california",
+        "california", "ca", "cali", "san diego", "sd", "socal", "so cal", "southern california",
         # neighborhoods
         "la jolla", "mission bay", "mission beach", "ocean beach", "ob ",
         "pacific beach", "pb ", "north park", "south park", "hillcrest",

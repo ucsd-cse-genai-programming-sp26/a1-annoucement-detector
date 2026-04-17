@@ -1,5 +1,5 @@
-from .filters.basic import MetadataFilter, LengthFilter, KeywordFilter, ProfanityFilter
-from .filters.llm import LLMClassifyStage, LLMExtractStage
+﻿from .filters.basic import MetadataFilter, LengthFilter, KeywordFilter, ProfanityFilter
+from .filters.llm import LLMExtractStage
 
 # --- Cost estimation constants ---
 # DeepSeek V3.2 pricing:
@@ -8,7 +8,7 @@ from .filters.llm import LLMClassifyStage, LLMExtractStage
 AVG_CLASSIFY_IN  = 150   # prompt + post text
 AVG_CLASSIFY_OUT = 5     # "Yes" or "No"
 AVG_EXTRACT_IN   = 180
-AVG_EXTRACT_OUT  = 100   # JSON with 4 fields
+AVG_EXTRACT_OUT = 100   # JSON with 4 fields
 
 USD_PER_M_IN  = 2.0 / 7
 USD_PER_M_OUT = 3.0 / 7
@@ -17,7 +17,7 @@ USD_PER_M_OUT = 3.0 / 7
 class EventPipeline:
     """
     The pipeline is just an ordered list of Stage objects.
-    To add, remove, or reorder stages — only edit the list in __init__.
+    To add, remove, or reorder stages - only edit the list in __init__.
     Nothing else needs to change.
     """
     def __init__(self):
@@ -26,7 +26,6 @@ class EventPipeline:
             LengthFilter(min_length=60, max_length=500),
             KeywordFilter(),
             ProfanityFilter(),
-            # LLMClassifyStage(),
         ]
         self.extractor = LLMExtractStage()
         self.reset_stats()
@@ -48,22 +47,32 @@ class EventPipeline:
             if not stage.matches(post):
                 return None
             self.stats["per_stage"][i] += 1
+
         self.stats["passed"] += 1
-        return self.extractor.extract(post)
+        result = self.extractor.extract(post)
+        if not self._is_valid_event(result):
+            return None
+        return result
+
+    def _is_valid_event(self, result):
+        if not isinstance(result, dict):
+            return False
+
+        fields = ("event_name", "date", "location", "description")
+        return any(
+            result.get(field) not in (None, "None", "Null", "Unknown", "")
+            for field in fields
+        )
 
     def estimate_cost(self):
         """
         Estimate cost from post counts × average token estimates.
-        Posts that reach LLMClassifyStage = passed profanity filter (stage index 2).
-        Posts that reach LLMExtractStage  = self.stats['passed'].
+        Posts that reach the pipeline extract stage = passed all filters.
         """
-        reaching_classify = self.stats["per_stage"][2] if len(self.stages) > 2 else 0
-        reaching_extract  = self.stats["passed"]
+        reaching_extract = self.stats["passed"]
 
-        in_tokens  = (reaching_classify * AVG_CLASSIFY_IN +
-                      reaching_extract  * AVG_EXTRACT_IN)
-        out_tokens = (reaching_classify * AVG_CLASSIFY_OUT +
-                      reaching_extract  * AVG_EXTRACT_OUT)
+        in_tokens  = reaching_extract * AVG_EXTRACT_IN
+        out_tokens = reaching_extract * AVG_EXTRACT_OUT
 
         cost_usd = (in_tokens  / 1_000_000 * USD_PER_M_IN +
                     out_tokens / 1_000_000 * USD_PER_M_OUT)
