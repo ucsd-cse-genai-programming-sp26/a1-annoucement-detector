@@ -1,1 +1,12 @@
+# Python bytecode (the __pycache__ folders you just deleted)
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments (never upload these; they are huge)
+venv/
+.venv/
+env/
+
+# Sensitive API Credentials (CRITICAL)
 .env
