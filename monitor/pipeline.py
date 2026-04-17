@@ -25,7 +25,7 @@ class EventPipeline:
             MetadataFilter(),
             LengthFilter(min_length=60, max_length=500),
             ProfanityFilter(),
-            LLMClassifyStage(),
+            # LLMClassifyStage(),
         ]
         self.extractor = LLMExtractStage()
         self.reset_stats()

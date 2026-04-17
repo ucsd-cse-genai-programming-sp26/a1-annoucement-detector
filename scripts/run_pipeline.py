@@ -56,7 +56,7 @@ def run_pipeline():
             result["source_text"] = text
             result["post_id"]     = post_id
             events_found.append(result)
-            print(f"✅ EVENT DETECTED")
+            print(f" EVENT DETECTED")
             print(f"   Name       : {result.get('event_name', 'Unknown')}")
             print(f"   Date       : {result.get('date', 'Unknown')}")
             print(f"   Location   : {result.get('location', 'Unknown')}")

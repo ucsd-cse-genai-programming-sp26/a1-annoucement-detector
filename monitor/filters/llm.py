@@ -28,6 +28,10 @@ class LLMClassifyStage(Stage):
             "You are an event detection bot. Is the following text a concrete "
             "event announcement with a specific activity and time/place? "
             "Ignore personal opinions or general news. Reply only 'Yes' or 'No'.\n\n"
+            "If \"Yes\", extract the following details from the text into a JSON object: "
+            "event_name, date, location, description. "
+            "If a field is missing, use 'Unknown'. "
+            "If \"No\", use \"Null\" for all fields.\n\n"
             f"Text: {post.text}"
         )
         try:

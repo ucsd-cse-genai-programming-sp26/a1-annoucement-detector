@@ -12,6 +12,34 @@ class MetadataFilter(Stage):
             return False
         return True
 
+class KeywordFilter(Stage):
+    """ Drop posts with no announcement-related keywords. """
+    name = "keyword"
+
+    KEYWORDS = [
+        # event language
+        "event", "happening", "tonight", "tomorrow", "this weekend",
+        "saturday", "sunday", "friday", "this thursday", "next week",
+        # gathering language
+        "meetup", "meet up", "gathering", "come join", "join us",
+        "everyone welcome", "open to all", "free admission",
+        # opportunity language
+        "volunteer", "volunteers", "opportunity", "sign up", "register",
+        "tickets", "rsvp", "apply",
+        # hosting language
+        "hosting", "presenting", "announcing", "invite", "inviting",
+        # activity language
+        "workshop", "class", "seminar", "pop-up", "market", "festival",
+        "concert", "show", "exhibit", "tour", "trivia", "game night",
+        "hike", "hiking", "ride", "yoga", "screening",
+    ]
+
+    def __init__(self, keywords: list[str] | None = None):
+        self.keywords = [k.lower() for k in (keywords or self.KEYWORDS)]
+
+    def matches(self, post: Post) -> bool:
+        text_lower = post.text.lower()
+        return any(kw in text_lower for kw in self.keywords)
 
 class LengthFilter(Stage):
     """Stage 2: filter by length"""

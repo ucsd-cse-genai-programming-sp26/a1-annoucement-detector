@@ -1,0 +1,68 @@
+## Review by [your name], [your pid]
+## Review of [review group name(s)]
+
+### 1. Prepared flow
+_What did you learn from the team's prepared trace? Did the prompt trace make the pipeline's behavior clear? Were the cost and stats numbers credible? Note anything surprising._
+
+### 2. Ad-hoc input
+_What input did your group suggest? What happened when they ran it? How did the results compare to the prepared flow — any differences in quality, cost, or behavior? Link to the relevant entry in the team's session log._
+
+### 3. Gold dataset spot-check
+_Read 10 random labeled examples from the project's gold dataset. How many do you agree with? For any disagreements, explain why you'd label it differently._
+
+
+### 4. Feature suggestion
+_What user-facing modification did you propose during Phase 3? Why would it matter for the use case? What parts of the pipeline would need to change to support it?_
+
+### 5. Overall
+_One specific thing this project does well. One specific area for improvement._
+
+Shivani
+- asked about data fetching: she used jestream(online), fetching all 
+- asked about filtering: keyword(must in, or drop), sentiment(positive and negative), profanity
+- suggestion: filter for san diego 
+
+Recommendation by shivani 
+- add option, combine two llm prompts into one 
+- go through live data 
+- keyword filter: have date
+- future: a calendar to show in the next month 
+- format date to be same- so can better put in a calendar 
+
+EVENT DETECTED
+   Name       : Know Your Rights!
+   Date       : Thursday, April 16, 2026
+   Location   : Room SB-111
+   Description: Join a presentation by the San Diego County Public Defender's Office on your civil liberties.
+   Author     : @sdmesa.bsky.social
+
+ EVENT DETECTED
+   Name       : Asian & Jewish: The Asian-American Jewish Experience
+   Date       : May 6th, 2:00 – 3:30 PM
+   Location   : Room G-101
+   Description: Screening: LUNAR: The Jewish Asian Film Project
+   Author     : @sdmesa.bsky.social
+
+ EVENT DETECTED
+   Name       : Visibility Brigade - North Park
+   Date       : Thursdays 5 – 6:30pm PDT
+   Location   : Meade Ave bridge over I-805 in North Park, 4371 Boundary St, San Diego, CA 92116
+   Description: Visibility Event · Volunteer organized
+   Author     : @democratswin.bsky.social
+
+Recommendation 
+- add similarlity comparison with golddataset 
+
+
+review2: Xiao
+1. data source: hackernews, reddit for job posting 
+2. filters: valid item structure and source types, keywords filter & discussion, semantic simliarity check, tritonllm filter
+
+cost less than a dollar 
+
+has a reset feature --reset /mode... 
+hackernews exhausted if two months and then switch to reddit
+match; time out 
+
+recommendation: add statistics to see pass rate, where the posting is from(reddit or hackernews) in the final results
+classify what kind of internship: data science/ml; location
