@@ -7,12 +7,6 @@ A multi-stage pipeline is designed to progressively filter out reposts, noise, a
 
 ---
 
-## Update
-### 1. Discussion: 
-V1 Annoucement Detect has a high recall and relatively lower precision, likely due to the strict labeling criteria used for evaluation data. A post is labeled to be an event annoucement only if it includes the necessary details like date and location. Some more casual posts about possible events or idea of event without settled details are not deemed as event annoucements. Hence, it's more likely for the LLM to be too lenient and get more False positives, i.e. random posts that look like annoucements but miss necessary details. 
-
----
-
 ## Setup
 
 ### 1. Clone the repository
@@ -110,6 +104,9 @@ Measured on 50 manually labeled BlueSky posts.
 | Recall         | 0.9375 |
 | F1             | 0.8108 |
 | Est. Cost (50 posts) | $ 0.00414 |
+
+#### Discussion: 
+V1 Annoucement Detect has a high recall and relatively lower precision, likely due to the strict labeling criteria used for evaluation data. A post is labeled to be an event annoucement only if it includes the necessary details like date and location. Some more casual posts about possible events or idea of event without settled details are not deemed as event annoucements. Hence, it's more likely for the LLM to be too lenient and get more False positives, i.e. random posts that look like annoucements but miss necessary details. 
 
 ### Per-Stage Breakdown
 
