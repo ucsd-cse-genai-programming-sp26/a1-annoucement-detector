@@ -11,36 +11,74 @@ class MetadataFilter(Stage):
         if langs and "en" not in langs:         
             return False
         return True
-
+    
 class KeywordFilter(Stage):
-    """ Drop posts with no announcement-related keywords. """
     name = "keyword"
 
-    KEYWORDS = [
-        # event language
-        "event", "happening", "tonight", "tomorrow", "this weekend",
-        "saturday", "sunday", "friday", "this thursday", "next week",
-        # gathering language
-        "meetup", "meet up", "gathering", "come join", "join us",
-        "everyone welcome", "open to all", "free admission",
-        # opportunity language
-        "volunteer", "volunteers", "opportunity", "sign up", "register",
-        "tickets", "rsvp", "apply",
-        # hosting language
-        "hosting", "presenting", "announcing", "invite", "inviting",
-        # activity language
-        "workshop", "class", "seminar", "pop-up", "market", "festival",
-        "concert", "show", "exhibit", "tour", "trivia", "game night",
-        "hike", "hiking", "ride", "yoga", "screening",
+    # Bucket 1: San Diego location signals
+    # Post must match AT LEAST ONE of these to be considered local
+    LOCATION_KEYWORDS = [
+        # city / region names
+        "san diego", "sd", "socal", "so cal", "southern california",
+        # neighborhoods
+        "la jolla", "mission bay", "mission beach", "ocean beach", "ob ",
+        "pacific beach", "pb ", "north park", "south park", "hillcrest",
+        "normal heights", "university heights", "mission hills",
+        "little italy", "gaslamp", "east village", "golden hill",
+        "city heights", "kensington", "talmadge", "college area",
+        "el cajon", "santee", "lakeside", "spring valley",
+        "chula vista", "national city", "imperial beach",
+        "coronado", "point loma", "ocean hills", "mira mesa",
+        "sorrento valley", "UTC", "clairemont", "linda vista",
+        "mission valley", "fashion valley", "morena",
+        "encinitas", "solana beach", "del mar", "cardiff",
+        "oceanside", "carlsbad", "vista", "san marcos", "escondido",
+        "poway", "santee", "el cajon", "lemon grove",
+        # landmarks / venues people actually use
+        "balboa park", "petco park", "pechanga arena", "snapdragon",
+        "liberty station", "seaport village", "old town",
+        "mission trails", "torrey pines", "lake murray",
+        "ucsd", "sdsu", "usd", "mesa college", "city college",
+        # zip codes — catches posts that skip the city name
+        "921",   # all SD zip codes start with 921xx
     ]
 
-    def __init__(self, keywords: list[str] | None = None):
-        self.keywords = [k.lower() for k in (keywords or self.KEYWORDS)]
+    # Bucket 2: Announcement signal words
+    # Post must match AT LEAST ONE of these to be worth sending to LLM
+    ANNOUNCEMENT_KEYWORDS = [
+        # time signals — strong indicator something is happening
+        "tonight", "tomorrow", "this weekend", "next weekend",
+        "this saturday", "this sunday", "this friday", "this thursday",
+        "next saturday", "next sunday", "next friday",
+        "saturday", "sunday",
+        "this week", "next week", "upcoming",
+        "am ", "pm ", "a.m.", "p.m.",   # time of day signals
+        # action words
+        "join", "come", "attend", "rsvp", "register", "sign up",
+        "signup", "tickets", "free admission", "free entry",
+        "volunteer", "volunteers", "apply", "applications",
+        "hosting", "presenting", "announcing", "invite", "inviting",
+        # event type words
+        "event", "meetup", "meet up", "gathering", "workshop",
+        "class", "seminar", "pop-up", "popup", "market", "festival",
+        "concert", "show", "exhibit", "exhibition", "screening",
+        "tour", "trivia", "game night", "open mic", "open house",
+        "hike", "hiking", "ride", "yoga", "run ", "walk ",
+        "sale", "swap", "fair", "cleanup", "rally", "protest",
+        "happy hour", "brunch", "dinner", "lunch",
+    ]
+
+    def __init__(self):
+        self.location_kws = [k.lower() for k in self.LOCATION_KEYWORDS]
+        self.announce_kws = [k.lower() for k in self.ANNOUNCEMENT_KEYWORDS]
 
     def matches(self, post: Post) -> bool:
-        text_lower = post.text.lower()
-        return any(kw in text_lower for kw in self.keywords)
-
+        text = post.text.lower()
+        has_location = any(kw in text for kw in self.location_kws)
+        has_announcement = any(kw in text for kw in self.announce_kws)
+        # must have BOTH a location signal AND an announcement signal
+        return has_location and has_announcement
+    
 class LengthFilter(Stage):
     """Stage 2: filter by length"""
     name = "length"

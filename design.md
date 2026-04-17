@@ -14,3 +14,13 @@
 ### 4. Asymmetric LLM Pipeline (Classify vs. Extract)
 - **Decision:**  I added a second LLM call to extract structured event details (name, date, location, description) from posts that had already been confirmed as events by the first classification call.
 - **Agency:** **30% Me / 70% Agent.** I initially only planned a single LLM call to classify whether a post was an event. The agent pointed out that confirmed events also needed structured details to be actually useful, and suggested adding a second extraction call that only runs on posts that passed classification. I agreed with the design and chose what fields to extract.
+
+### 5. Transition to Firehose Streaming
+
+- **Dual Mode Support:** Upgrading from offline batch downloads to real-time firehose streaming while maintaining backward compatibility with batch mode. Supports both streaming (`--stream` flag) and batch processing modes.
+- **Hybrid Deduplication:** Uses a shared persistent state file to avoid duplicates across both batch and streaming modes. A rolling cache still keeps the last 1000 IDs in memory, while a persistent `processed_ids` set in `data/state.json` prevents re-processing or duplicate output across runs.
+- **State Persistence:** Saves streaming state (and the cross-mode dedupe index) to `data/state.json` every 100 posts or 30 seconds, with force-save on graceful shutdown (Ctrl+C).
+- **Time-Based Cutoff:** Automatically stops streaming when posts older than 60 days are encountered.
+- **Graceful Shutdown:** Signal handlers capture SIGINT/SIGTERM to save state immediately and close connections cleanly.
+- **No New Credentials:** Uses the same Bluesky credentials (handle + app password) - no new API keys required.
+- **Resource Efficiency:** Memory usage remains constant (~100KB for ID cache); network usage ~1-10 MB/hour.

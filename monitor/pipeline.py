@@ -1,4 +1,4 @@
-from .filters.basic import MetadataFilter, LengthFilter, ProfanityFilter
+from .filters.basic import MetadataFilter, LengthFilter, KeywordFilter, ProfanityFilter
 from .filters.llm import LLMClassifyStage, LLMExtractStage
 
 # --- Cost estimation constants ---
@@ -24,6 +24,7 @@ class EventPipeline:
         self.stages: list = [
             MetadataFilter(),
             LengthFilter(min_length=60, max_length=500),
+            KeywordFilter(),
             ProfanityFilter(),
             # LLMClassifyStage(),
         ]

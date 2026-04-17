@@ -47,7 +47,7 @@ DEEPSEEK_API_KEY=your-deepseek-key-here
 
 ### 1. Collect & Label Data
 ```bash
-# Fetch 500 posts from BlueSky 
+# Fetch 500 posts from BlueSky (batch mode)
 python -m scripts.fetch
 
 # Manually label 50 posts to build the gold dataset
@@ -55,10 +55,29 @@ python -m scripts.label
 ```
 
 ### 2. Run the Pipeline
+
+The pipeline supports two modes: **batch** (from saved posts) and **streaming** (live from firehose).
+
+#### Batch Mode (default)
 ```bash
 # Run pipeline on all fetched posts, print and save detected events
 python -m scripts.run_pipeline
 ```
+
+#### Streaming Mode (real-time)
+```bash
+# Stream posts live from Bluesky firehose and process in real-time
+python -m scripts.run_pipeline --stream
+
+# Stop streaming gracefully with Ctrl+C (state is saved automatically)
+```
+
+**Streaming Features:**
+- Real-time processing of posts as they appear on Bluesky
+- Automatic deduplication - restart without processing duplicates
+- State persistence in `data/state.json` for resumable streaming
+- Auto-stops at 60-day-old posts to avoid processing historical data
+- Graceful shutdown with Ctrl+C saves all progress
 
 ### 3. Evaluate
 ```bash
@@ -141,12 +160,13 @@ a1-announcement-detector/
 ├── README.md
 ├── DESIGN.md
 ├── data/
-│   ├── raw_posts.jsonl          # 500 fetched BlueSky posts
+│   ├── raw_posts.jsonl          # fetched BlueSky posts (batch mode)
+│   ├── state.json               # streaming state (resumable progress)
 │   ├── gold.jsonl               # 50 manually labeled posts
 │   ├── detected_events.jsonl    # events found by run_pipeline
 │   ├── eval_runs.csv            # evaluate run (summary)
 │   ├── eval_samples.csv     
-│   └── pipeline_runs.csv      
+│   └── pipeline_runs.csv
 ├── transcripts/                
 ├── monitor/
 │   ├── __init__.py
@@ -157,9 +177,10 @@ a1-announcement-detector/
 │       ├── basic.py             # MetadataFilter, LengthFilter, ProfanityFilter
 │       └── llm.py               # LLMClassifyStage, LLMExtractStage
 └── scripts/
-    ├── fetch.py                 # fetch posts from BlueSky
+    ├── fetch.py                 # fetch posts (batch) or stream (firehose)
+    ├── state.py                 # state management for streaming
     ├── label.py                 # manual labeling CLI
-    ├── run_pipeline.py          # run pipeline on raw posts
+    ├── run_pipeline.py          # run pipeline (batch or streaming mode)
     └── evaluate.py              # measure precision/recall/cost
 ```
 
