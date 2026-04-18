@@ -100,24 +100,31 @@ Measured on 50 manually labeled BlueSky posts.
 
 | Metric         | Value |
 |----------------|-------|
-| Precision      | 0.7143 |
-| Recall         | 0.9375 |
-| F1             | 0.8108 |
-| Est. Cost (50 posts) | $ 0.00414 |
+| Precision      | 0.50 |
+| Recall         | 0.20 |
+| F1             | 0.29 |
 
-#### Discussion: 
-V1 Annoucement Detect has a high recall and relatively lower precision, likely due to the strict labeling criteria used for evaluation data. A post is labeled to be an event annoucement only if it includes the necessary details like date and location. Some more casual posts about possible events or idea of event without settled details are not deemed as event annoucements. Hence, it's more likely for the LLM to be too lenient and get more False positives, i.e. random posts that look like annoucements but miss necessary details. 
+Prediction Details: TP: 2, FP: 2, FN: 8, TN: 35
+
+#### Discussion:
+The new pipeline shows lower recall and precision compared to the initial version due to significant changes in data collection strategy:
+
+- **Broader fetch query impact**: Switching from a narrow search phrase ("san diego event") to broader terms ("ca", "california", "san diego", "sd") changes the data composition. The 498 downloaded posts now contain far fewer actual event announcements, so the low TP count (2) reflects a data problem — real events are simply rarer in a general-chatter pool.
+
+- **Keyword filter limitations**: The keyword filter may discard legitimate announcements lacking standard event vocabulary, contributing to false negatives.
+
+- **Incomplete event details**: Many BlueSky event announcements offload key details (date, location, venue) to attached images or external links. Since the pipeline only processes post text, the LLM extracts nothing meaningful for these posts and rejects them. 
 
 ### Per-Stage Breakdown
 
-| Stage        | In  | Out | Dropped | Notes                      |
-|--------------|-----|-----|---------|----------------------------|
-| Raw fetch    | 500 | 500 | 0       | No filtering               |
-| metadata     | 500 | 496 | 4       | Drops reposts, non-English |
-| length       | 496 | 487 | 9       | Keeps 60–500 chars         |
-| profanity    | 487 | 487 | 0       | Drops profane posts        |
-| llm_classify | 487 | 302 | 185     | DeepSeek Yes/No            |
-| llm_extract  | 302 | 302 | 0       | JSON extraction            |
+| Stage        | In  | Out | Dropped | Notes                           |
+|--------------|-----|-----|---------|--------------------------------|
+| metadata     | 498 | 486 | 12      | Drops reposts, non-English      |
+| length       | 486 | 448 | 38      | Keeps 60–500 chars              |
+| keyword      | 448 | 178 | 270     | Removes non-event vocabulary    |
+| profanity    | 178 | 170 | 8       | Drops profane posts             |
+| llm_extract  | 170 | 170 | 0       | Single LLM call: classify + extract |
+| **TOTAL**    | **498** | **170** | **328**  | **Pass rate: 34.1%**            |
 
 ### Stats files
 Every `evaluate` run appends to two CSV files, allowing systematic comparison across prompt changes and pipeline configurations.
@@ -142,11 +149,11 @@ run_id | timestamp | label | post_id | text | true_label | predicted | correct
 
 **2. LengthFilter**: Keeps posts between 60 and 500 characters. Below 60 is casual noise; above 500 is typically a news article or rant.
 
-**3. ProfanityFilter**: Drops posts containing profanity using the `better-profanity` library. 
+**3. KeywordFilter**: Removes posts lacking event-related vocabulary (dates, times, locations, event keywords). Significantly reduces noise before the expensive LLM stage.
 
-**4. LLMClassify**: Sends the post to DeepSeek with a Yes/No prompt. Only confirmed events proceed further.
+**4. ProfanityFilter**: Drops posts containing profanity using the `better-profanity` library.
 
-**5. LLMExtractStage**: For confirmed events, a second DeepSeek call extracts `event_name`, `date`, `location`, `description` as structured JSON.
+**5. LLMExtractStage**: Single unified DeepSeek call that both confirms the post is an event announcement and extracts structured details: `event_name`, `date`, `location`, `description` as JSON. Replaces the previous two-stage LLM pipeline.
 
 ---
 
@@ -182,6 +189,33 @@ a1-announcement-detector/
     ├── run_pipeline.py          # run pipeline (batch or streaming mode)
     └── evaluate.py              # measure precision/recall/cost
 ```
+
+---
+
+## Original V1 Pipeline (for reference)
+
+**Fetch Query**: Narrow phrase: "san diego event"  
+**LLM Approach**: Two separate calls (classify, then extract)
+
+| Stage        | In  | Out | Dropped |
+|--------------|-----|-----|---------|
+| metadata     | 500 | 496 | 4       |
+| length       | 496 | 487 | 9       |
+| profanity    | 487 | 487 | 0       |
+| llm_classify | 487 | 302 | 185     |
+| llm_extract  | 302 | 302 | 0       |
+| **TOTAL**    | **500** | **302** | **198** |
+
+**V1 Eval Results**: Precision: 0.7143 | Recall: 0.9375 | F1: 0.8108
+
+---
+
+## Differences from V1
+
+The current V2 pipeline differs in two key ways:
+1. **Broader fetch query** ("ca", "california", "san diego", "sd") instead of just "san diego event" 
+2. **Added keyword filter** 
+3. **Single LLM Call**
 
 ---
 
